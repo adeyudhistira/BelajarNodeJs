@@ -38,7 +38,8 @@ app.get('/todos/search/:keyword', function (req, res) {
     let keyword = req.params.keyword;
     
 	mc.query("SELECT * FROM user WHERE username LIKE ? ", ['%' + keyword + '%'], function (error, results, fields) {       
-	   if (error) throw error;
+		console.log(keyword);
+	  if (error) throw error;
         return res.send({ error: false, data: results, message: 'Todos search list.' });
     });
 });
@@ -49,8 +50,12 @@ app.get('/todo/:id', function (req, res) {
     let task_id = req.params.id;
  
     mc.query('SELECT * FROM user where id=?', task_id, function (error, results, fields) {
-        if (error) throw error;
-        return res.send({ error: false, data: results[0], message: 'Todos list.' });
+        if (results == null) {
+		return res.send({ message: 'data kosong' });	
+		}else{
+		return res.send({ data: results[0], message: 'Todos list.' });
+		}
+        
     });
  
 });
@@ -58,13 +63,12 @@ app.get('/todo/:id', function (req, res) {
 // Add a new todo  
 app.post('/todo', function (req, res) {
  
-    let task = req.body.task;
- 
-    if (!task) {
-        return res.status(400).send({ error:true, message: 'Please provide task' });
-    }
- 
-    mc.query("INSERT INTO user SET ? ", { task: task }, function (error, results, fields) {
+    let username = req.body.username;
+	let password = req.body.password;
+    let fullname = req.body.fullname;
+	let city = req.body.city;
+	let status = req.body.status;
+    mc.query("INSERT INTO user SET ? ", { username: username ,password: password,fullname: fullname, city: city,status: status}, function (error, results, fields) {
         if (error) throw error;
         return res.send({ error: false, data: results, message: 'New task has been created successfully.' });
     });
